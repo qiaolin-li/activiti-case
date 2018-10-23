@@ -1,0 +1,67 @@
+
+
+spring:
+  #Activiti property configuration
+  activiti:
+    database-schema-update: false
+    job-executor-activate: true
+    history-level: full
+    check-process-definitions: false
+    ext:
+      database-schema-update: false
+
+   #不生成identity 相关表
+   #db-identity-used: false
+
+  #数据源配置，这里使用 阿里的 druid
+  datasource:
+    url: jdbc:mysql://47.98.193.222:13306/forward?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+
+    #2.0以后开启这个 initialization-mode 才会自动执行sql脚本
+    initialization-mode: always
+
+    #初始化连接数
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    #配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+    filters: stat,wall,log4j
+    maxPoolPreparedStatementPerConnectionSize: 20
+    useGlobalDataSourceStat: true
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+
+
+#日志
+logging:
+  level:
+    org.apache.ibatis: DEBUG
+    com.ascendant: debug
+
+#MyBatis 配置
+mybatis:
+  mapper-locations: classpath:mappers/**/*Mapper.xml
+  type-aliases-package: com.ascendant.core.entity,com.ascendant.module.entity
+  configuration:
+    map-underscore-to-camel-case: true
+
+
+# pagehelper
+pagehelper:
+    helperDialect: mysql
+    reasonable: true
+    supportMethodsArguments: true
+    params: count=countSql
+
+#debug: true
