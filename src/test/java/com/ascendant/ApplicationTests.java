@@ -1,11 +1,7 @@
 package com.ascendant;
 
-import org.activiti.engine.RepositoryService;
-import org.activiti.engine.RuntimeService;
-import org.activiti.engine.TaskService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -13,9 +9,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class ApplicationTests {
 
+//    @Autowired
+//    private UserMapper userMapper;
 
 	@Test
 	public void contextLoads() {
-	}
+        //QueryWrapper<UserEntity> wrapper = new QueryWrapper<>();
+        //wrapper.eq()
+//        List<UserEntity> userEntities = userMapper.selectList(null);
+
+//        System.out.println(userEntities.size());
+
+    }
 
 }

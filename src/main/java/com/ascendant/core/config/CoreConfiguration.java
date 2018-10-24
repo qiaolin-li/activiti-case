@@ -41,12 +41,11 @@ public class CoreConfiguration {
 
     /**
      *  事务管理器
-     * @param dataSource
      * @return
      */
     @Bean
-    public PlatformTransactionManager transactionManager(DataSource dataSource){
-        return new DataSourceTransactionManager(dataSource);
+    public PlatformTransactionManager transactionManager(){
+        return new DataSourceTransactionManager(dataSource());
     }
 
 

@@ -19,11 +19,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                // 关闭csrf保护功能（跨域访问）
-                .csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/model/**").permitAll();//访问API下无需登录认证权限
+        // 关闭csrf保护功能（跨域访问）
+        http.csrf().disable()
+            .authorizeRequests()
+            .antMatchers("/model/**").permitAll();//访问API下无需登录认证权限
     }
 
 }

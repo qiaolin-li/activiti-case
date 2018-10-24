@@ -1,15 +1,28 @@
 package com.ascendant.core.controller;
 
 import com.ascendant.core.service.ActModelService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.activiti.editor.constants.ModelDataJsonConstants;
+import org.activiti.engine.ActivitiException;
+import org.activiti.engine.RepositoryService;
+import org.activiti.rest.editor.model.ModelSaveRestResource;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 
 /**
  * 流程模型相关Controller
@@ -17,10 +30,20 @@ import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping(value = "act/model")
-public class ActModelController  {
+public class ActModelController implements ModelDataJsonConstants {
 
 	@Autowired
 	private ActModelService actModelService;
+
+
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ModelSaveRestResource.class);
+
+	@Autowired
+	private RepositoryService repositoryService;
+
+	@Autowired
+	private ObjectMapper objectMapper;
+
 
 	///**
 	// * 流程模型列表
@@ -139,4 +162,50 @@ public class ActModelController  {
 	//	j.setMsg("删除成功" );
 	//	return j;
 	//}
+
+	/**
+	 *  此方法用于覆盖Activiti model 保存的方法，
+	 *  因为那个方法获取前台发送过来的参数时会报错
+	 *  根据跟踪结果，为消息解析器无法解析出来，但不知道怎么修改！
+	 * @see ModelSaveRestResource#saveModel(java.lang.String, org.springframework.util.MultiValueMap)
+	 **/
+	@RequestMapping(value="/{modelId}/save", method = RequestMethod.PUT)
+	@ResponseStatus(value = HttpStatus.OK)
+	public void saveModel(@PathVariable String modelId, @RequestParam("name") String name,
+						  @RequestParam("json_xml") String json_xml, @RequestParam("svg_xml") String svg_xml,
+						  @RequestParam("description") String description) {
+		try {
+
+			org.activiti.engine.repository.Model model = repositoryService.getModel(modelId);
+
+			ObjectNode modelJson = (ObjectNode) objectMapper.readTree(model.getMetaInfo());
+
+			modelJson.put(MODEL_NAME, name);
+			modelJson.put(MODEL_DESCRIPTION, description);
+			model.setMetaInfo(modelJson.toString());
+			model.setName(name);
+
+			repositoryService.saveModel(model);
+
+			repositoryService.addModelEditorSource(model.getId(), json_xml.getBytes("utf-8"));
+
+			InputStream svgStream = new ByteArrayInputStream(svg_xml.getBytes("utf-8"));
+			TranscoderInput input = new TranscoderInput(svgStream);
+
+			PNGTranscoder transcoder = new PNGTranscoder();
+			// Setup output
+			ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+			TranscoderOutput output = new TranscoderOutput(outStream);
+
+			// Do the transformation
+			transcoder.transcode(input, output);
+			final byte[] result = outStream.toByteArray();
+			repositoryService.addModelEditorSourceExtra(model.getId(), result);
+			outStream.close();
+
+		} catch (Exception e) {
+			LOGGER.error("Error saving model", e);
+			throw new ActivitiException("Error saving model", e);
+		}
+	}
 }

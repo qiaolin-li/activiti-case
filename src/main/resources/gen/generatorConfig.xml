@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+	<!-- 指定数据库驱动的位置 -->
+    <classPathEntry location="D:/m2/repository/mysql/mysql-connector-java/5.1.30/mysql-connector-java-5.1.30.jar"/>
+   
+    <context id="default" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+        <plugin type="com.ascendant.common.gen.plugin.SerializablePlugin"/>
+		
+
+        <!-- 生成接口 -->
+        <plugin type="com.ascendant.common.gen.plugin.MapperPlugin">
+        	<property name="targetProject" value="src/main/java"/>
+        	<property name="targetPackage" value="com.ascendant.module.mapper"/>
+        	<property name="superMapper" value="com.ascendant.core.mapper.BaseMapper"/>
+        </plugin>
+        
+        <!-- 去除注释 -->
+        <commentGenerator >
+          	 <property name="suppressDate" value="true" />  
+             <property name="suppressAllComments" value="true" />  
+        </commentGenerator>
+        
+        <!-- 数据库信息 -->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://47.98.193.222:13306/forward?useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"
+                        userId="root" password="123456">
+        </jdbcConnection>
+        
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+        
+        <!-- 生成Entity -->
+        <javaModelGenerator targetPackage="com.ascendant.module.entity" targetProject="src/main/java">
+            <!-- 入参方式,false 为set方式入参,true为构造器入参 -->
+            <property name="constructorBased" value="false"/>
+            
+            <property name="useActualColumnNames" value="true" />
+
+            <!-- 如果true,根据catalog和schema来生成子包。如果false就会直接用targetPackage属性。 -->
+            <property name="enableSubPackages" value="false"/>
+
+            <!-- 该属性用来配置实体类属性是否可变，如果设置为true，那么constructorBased不管设置成什么，
+            	 都会使用构造方法入参，并且不会生成setter方法。如果为false，实体类属性就可以改变。默认为false  -->
+            <property name="immutable" value="false"/>
+
+            <!-- 是否对查询出的数据做处理, 例: this.name = name == null ? null : name.trim() -->
+            <property name="trimStrings" value="true"/>
+
+            <!-- 指定父类 -->
+            <property name="rootClass" value="com.ascendant.core.entity.BaseEntity"/>
+        </javaModelGenerator>
+        
+        
+        <!-- 映射文件 -->
+        <sqlMapGenerator targetPackage="mappers.module" targetProject="src/main/resources">
+            <!-- 指定为false,根据target...来生成 -->
+            <property name="enableSubPackages" value="false"/>
+            <property name="mapperInterfacePackage" value="com.ascendant.module.mapper"/>
+        </sqlMapGenerator>
+    	
+    	<!-- 指定数据库中的表,可以用到模糊表名。 -->
+        <table tableName="user%"  >
+            <!--<generatedKey column="id" sqlStatement="JDBC" />-->
+        </table>
+        
+    </context>
+</generatorConfiguration>
