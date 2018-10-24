@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 <generatorConfiguration>
 	<!-- 指定数据库驱动的位置 -->
-    <classPathEntry location="D:/m2/repository/mysql/mysql-connector-java/5.1.30/mysql-connector-java-5.1.30.jar"/>
+    <classPathEntry location="src/main/resources/gen/mysql-connector-java-5.1.30.jar"/>
    
     <context id="default" targetRuntime="MyBatis3Simple" defaultModelType="flat">
         <plugin type="com.ascendant.common.gen.plugin.SerializablePlugin"/>
